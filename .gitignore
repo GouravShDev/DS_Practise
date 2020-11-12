@@ -1,0 +1,5 @@
+# Executable
+*.exe
+
+# Visual code auto created files
+*.json
