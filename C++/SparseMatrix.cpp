@@ -33,15 +33,15 @@ SparseMatrix::SparseMatrix(int n, int m , int num){
     this->n= n;
     this->m= m;
     this->num=num;
-    element = new SparseElement[num];
+    element = new SparseElement[num+1];
 } 
 
 // Method for diplaying Matrix (I_I)
 void SparseMatrix::display(){
     int i,j,k; // indices for accessing element array
 
-    for(i=0,k=0; i < m;i++){
-        for(j=0;j<n;j++){
+    for(i=1,k=0; i <=n;i++){
+        for(j=1;j<=m;j++){
             // Checking if SparseElement contain element for current Index
             if(i== element[k].i && j== element[k].j){
                 cout<<element[k++].value<<" ";
