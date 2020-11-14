@@ -75,18 +75,20 @@ SparseMatrix SparseMatrix::operator+(SparseMatrix m2){
     i=j=k=1;
 
 
-    while(i<this->num || j<m2.num){
-        if(this->element[i].i < m2.element[j].i)
-            m3->element[k++] = this->element[i++];
-        else if(this->element[i].i > m2.element[j].i)
-            m3->element[k++] = m2.element[j++];
-        else if(this->element[i].j < m2.element[j].j)
-            m3->element[k++] = this->element[i++];
-        else if(this->element[i].j > m2.element[j].j)
+    while(i<=num && j<=m2.num){
+        if(element[i].i < m2.element[j].i)
+            m3->element[k++] = element[i++];
+        else if(element[i].i > m2.element[j].i)
             m3->element[k++] = m2.element[j++];
         else{
-            m3->element[k] = this->element[i];
-            m3->element[k++].value = this->element[i++].value + m2.element[j++].value;
+            if(element[i].j < m2.element[j].j)
+                m3->element[k++] = element[i++];
+            else if(element[i].j > m2.element[j].j)
+                m3->element[k++] = m2.element[j++];
+            else{
+                m3->element[k] = element[i];
+                m3->element[k++].value = element[i++].value + m2.element[j++].value;
+            }
         }
     }  
         for(; i <=this->num; i++){
@@ -108,6 +110,9 @@ int main(){
     cout<<"Enter non-zero values for 2nd Matrix\n";
     cin>>matrix2;
     // Adding input matrices
+    cout<<"First Matrix"<<matrix<<endl;
+    cout<<"Second Matrix"<<matrix2<<endl;
+    cout<<"Sum Matrix";
     SparseMatrix matrix3 = matrix + matrix2;
     cout<<matrix3;
     
