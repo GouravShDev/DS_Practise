@@ -18,12 +18,13 @@ class SparseMatrix{
 
     public:
         SparseMatrix(int n, int m , int num); 
-        // Method to take Input
-        void read();
-        // Method to display Matrix output
-        void display();
+        // Declaring overloading of >> operator
+        friend istream & operator>>(istream &is, SparseMatrix &matrix);
+        // Declaring overloading of << operator
+        friend ostream & operator<<(ostream &os, SparseMatrix &matrix);
+        SparseMatrix operator+(SparseMatrix m2);
         // Simple Destructor to release resource
-        SparseMatrix add(SparseMatrix m1, SparseMatrix m2);
+        
         ~SparseMatrix() {delete [] element;} 
 };
 // Simple Constructor
@@ -34,15 +35,16 @@ SparseMatrix::SparseMatrix(int n, int m , int num){
     element = new SparseElement[num+1];
 } 
 
-// Method for diplaying Matrix (I_I)
-void SparseMatrix::display(){
+// Definiton for overloading cout<< operator (I_I)
+ostream & operator<<(ostream &os, SparseMatrix &matrix){
+    cout<<endl;
     int i,j,k; // indices for accessing element array
 
-    for(i=1,k=1; i <=n;i++){
-        for(j=1;j<=m;j++){
+    for(i=1,k=1; i <=matrix.n;i++){
+        for(j=1;j<=matrix.m;j++){
             // Checking if SparseElement contain element for current Index
-            if(i== element[k].i && j== element[k].j){
-                cout<<element[k++].value<<" ";
+            if(i== matrix.element[k].i && j== matrix.element[k].j){
+                cout<<matrix.element[k++].value<<" ";
                 continue;
             }
             // Printing 0 for all other elements
@@ -50,57 +52,63 @@ void SparseMatrix::display(){
         }
         cout<<endl;
     }
+    cout<<endl;
+    return os;
 }
-// Method Definition to read input from Console
-void SparseMatrix::read(){
+// Definition for overloading cin>> operator
+istream & operator>>(istream &is, SparseMatrix &matrix){
     int i;
-    for(i=1;i<=num;i++){
-        cin>>element[i].i>>element[i].j>>element[i].value;
+    for(i=1;i<=matrix.num;i++){
+        cin>>matrix.element[i].i>>matrix.element[i].j>>matrix.element[i].value;
     }
+    return is;
 }
-// Method To add two Matrix
 
-SparseMatrix SparseMatrix::add(SparseMatrix m1, SparseMatrix m2){
-    SparseMatrix s2(2,1,1);
-    if(m1.n != m2.n || m1.m != m2.m) return s2;
+// Overloading + operator for adding matrices
+SparseMatrix SparseMatrix::operator+(SparseMatrix m2){
     int i, j ,k;
-    i=j=1;
-    k=1;
-    SparseMatrix m3(m1.n, m2.m, m1.num+m2.num);
+    // checking if matrix addition is possible
+    if(this->n != m2.n || this->m != m2.m) return SparseMatrix(0,0,0);
+    
+    // Dynamically creating Matrix to store summation    
+    SparseMatrix *m3 = new SparseMatrix(n, m, this->num+m2.num);
+    i=j=k=1;
 
-    while(i<m1.num || j<m2.num){
-        if(m1.element[i].i < m2.element[j].i)
-            m3.element[k++] = m1.element[i++];
-        else if(m1.element[i].i > m2.element[j].i)
-            m3.element[k++] = m2.element[j++];
-        else if(m1.element[i].j < m2.element[j].j)
-            m3.element[k++] = m1.element[i++];
-        else if(m1.element[i].j > m2.element[j].j)
-            m3.element[k++] = m2.element[j++];
+
+    while(i<this->num || j<m2.num){
+        if(this->element[i].i < m2.element[j].i)
+            m3->element[k++] = this->element[i++];
+        else if(this->element[i].i > m2.element[j].i)
+            m3->element[k++] = m2.element[j++];
+        else if(this->element[i].j < m2.element[j].j)
+            m3->element[k++] = this->element[i++];
+        else if(this->element[i].j > m2.element[j].j)
+            m3->element[k++] = m2.element[j++];
         else{
-            m3.element[k] = m1.element[i];
-            m3.element[k].value = m1.element[i++].value + m2.element[j++].value;
-            k++;
+            m3->element[k] = this->element[i];
+            m3->element[k++].value = this->element[i++].value + m2.element[j++].value;
         }
     }  
-        for(; i <=m1.num; i++){
-            m3.element[k++] = m1.element[i];
+        for(; i <=this->num; i++){
+            m3->element[k++] = this->element[i];
         }  
         for(; j <=m2.num; j++){
-            m3.element[k++] = m2.element[j];
+            m3->element[k++] = m2.element[j];
         }
-    
-    m3.display();
-    return m3;
+    m3->num = k;
+    // Returning Matrix pointed by m3 pointer
+    return *m3;
 }
 
 int main(){
     SparseMatrix matrix(3,3,3);
     SparseMatrix matrix2(3,3,2);
-    matrix.read();
-    cout<<"Enter values for 2nd matrix\n";
-    matrix2.read();
-    //matrix.display();
-    cout<<"*************\n";
-    matrix.add(matrix, matrix2);
+    cout<<"Enter non-zero values for 1st Matrix\n";
+    cin>>matrix;
+    cout<<"Enter non-zero values for 2nd Matrix\n";
+    cin>>matrix2;
+    // Adding input matrices
+    SparseMatrix matrix3 = matrix + matrix2;
+    cout<<matrix3;
+    
 }
