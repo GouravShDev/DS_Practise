@@ -3,3 +3,6 @@
 
 # Visual code auto created files
 *.json
+
+# Test cases
+*.txt
