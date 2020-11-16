@@ -65,6 +65,10 @@ ostream & operator<<(ostream &os, SparseMatrix &matrix){
                         cout<<"0 ";   
                     }   
                 }
+                if(j<matrix.m){
+                    cout<<"0 ";
+                    j++;
+                }
             }else{
                 cout<<"0 ";
             }
@@ -78,7 +82,7 @@ ostream & operator<<(ostream &os, SparseMatrix &matrix){
 }
 
 int main(){
-    SparseMatrix matrix(4,4,5);
+    SparseMatrix matrix(3,3,4);
     cin>>matrix;
     cout<<endl;
     cout<<matrix;
