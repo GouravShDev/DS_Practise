@@ -1,58 +1,63 @@
 #include <iostream>
 using namespace std;
+
+template <class T>
 class Node{
 
 public:
-    int data;
+    T data;
     Node *next;
 
-    Node(int data){
+    Node(T data){
         this->data = data;
     }
 };
-
+template <class T>
 class LinkedList{
-    Node *head = NULL;
-    Node *tail = NULL;
+    Node<T> *head = NULL;
+    Node<T> *tail = NULL;
     int size = 0;
 
 public:
     void display();
-    void add(int data);
+    void add(T data);
     void reverseDisplay();
-    void addSorted(int x);
+    void addSorted(T x);
     void removeDup();
     void reverseList();
-    int del();
-    int del(int index);
+    T del();
+    T del(int index);
     int getSize();
     int getSum();
     int getRecSum();
-    int getmax();
-    int getRecMax();
-    Node * search(int x);
-    Node * optSearch(int x);
-    Node * insert(int x, int index);
-    Node * insert(int x);
+    T getmax();
+    T getRecMax();
+    Node<T> * search(T x);
+    Node<T> * optSearch(T x);
+    Node<T> * insert(T x, int index);
+    Node<T> * insert(T x);
     bool isSorted();
+    bool isLoop();
     LinkedList operator+(LinkedList list);
-    friend LinkedList mergeSorted(LinkedList list1, LinkedList list2 );
+    //friend LinkedList<T> mergeSorted<>(LinkedList<T> list1, LinkedList<T> list2);
+    void createLoop();
+
 
 private:
-    void revD(Node *p){
+    void revD(Node<T> *p){
         if(p){
             revD(p->next);
             cout<<p->data<<" ";
         }
     }
-    int sum(Node *p){
+    int sum(Node<T> *p){
         if(p){
             return sum(p->next) + p->data;
         }else{
             return 0;
         }
     }
-    int max(Node *p){
+    T max(Node<T> *p){
         if(p){
             return p->data > max(p->next)? p->data : max(p->next);
             // if(p->data > max(p->next)){
@@ -64,7 +69,7 @@ private:
             return 0;
         }
     }
-    void reverse(Node * p, Node * q){
+    void reverse(Node<T> * p, Node<T> * q){
         if(q){
             reverse(p->next, q->next);
             q->next= p;
@@ -75,20 +80,23 @@ private:
             }
     }
 };
-LinkedList LinkedList::operator+(LinkedList list){
-    Node * p = head;
+template <class T>
+LinkedList<T> LinkedList<T>::operator+(LinkedList list){
+    Node<T> * p = head;
     while(p->next){
         p = p->next;
     }
     p->next = list.head;
     return *this;
 }
-void LinkedList::reverseList(){
+template <class T>
+void LinkedList<T>::reverseList(){
     reverse(head,head->next);    
 }
-void LinkedList::removeDup(){
-    Node * p = head->next;
-    Node * q = head;
+template <class T>
+void LinkedList<T>::removeDup(){
+    Node<T> * p = head->next;
+    Node<T> * q = head;
 
     if(q){
         while(p){
@@ -109,12 +117,13 @@ void LinkedList::removeDup(){
         }
     }
 }
-LinkedList mergeSorted(LinkedList list1, LinkedList list2){
-    LinkedList result;
-    Node * first = list1.head;
-    Node * second = list2.head;
-    Node * third = NULL;
-    Node * last = NULL;
+template <class T>
+LinkedList<T> mergeSorted(LinkedList<T> list1, LinkedList<T> list2){
+    LinkedList<T> result;
+    Node<T> * first = list1.head;
+    Node<T> * second = list2.head;
+    Node<T> * third = NULL;
+    Node<T> * last = NULL;
     if(first->data > second->data){
         third = last = second;
         second = second->next;
@@ -148,16 +157,18 @@ LinkedList mergeSorted(LinkedList list1, LinkedList list2){
     return result;
     
 }
-int LinkedList::del(){
-    int data = head->data;
-    Node * deleteNode = head;
+template <class T>
+T LinkedList<T>::del(){
+    T data = head->data;
+    Node<T> * deleteNode = head;
     head = head->next;
     delete deleteNode;   
     return data;
 }
-int LinkedList::del(int index){
-    Node * p = head;
-    Node * q = NULL;
+template <class T>
+T LinkedList<T>::del(int index){
+    Node<T> * p = head;
+    Node<T> * q = NULL;
     int data;
     if(index == 0){
         data = del();
@@ -184,9 +195,10 @@ int LinkedList::del(int index){
     }
     return data;
 }
-int LinkedList::getmax(){
+template <class T>
+T LinkedList<T>::getmax(){
     int max = INT16_MIN;
-    Node *p = head;
+    Node<T> *p = head;
     while (p)
     {   if(max < p->data) max = p->data;
         p = p->next;
@@ -194,14 +206,15 @@ int LinkedList::getmax(){
     return max;
     
 }
-int LinkedList::getRecSum(){
+template <class T>
+int LinkedList<T>::getRecSum(){
     return sum(head);
 }
-
-void LinkedList::addSorted(int x){
-    Node *p = head;
-    Node * node = new Node(x);
-    Node * q = NULL;
+template <class T>
+void LinkedList<T>::addSorted(T x){
+    Node<T> *p = head;
+    Node<T> * node = new Node<T>(x);
+    Node<T> * q = NULL;
     if(p){
         while(p && p->data<x){
             q = p;
@@ -224,25 +237,46 @@ void LinkedList::addSorted(int x){
         size++;
     }
 }
+template <class T>
+void LinkedList<T>::createLoop(){
+    tail->next = head;
+}
+template <class T>
+bool LinkedList<T>::isLoop(){
+    Node<T> * p = head;
+    Node<T> * q = p;
 
-
-int LinkedList::getSum(){
+    while(q && p){
+        p = p->next;
+        q = q->next->next;
+        q = q ? q->next: NULL;
+        if( q == p){
+            return true;
+        }
+    }
+    return false;
+}
+template <class T>
+int LinkedList<T>::getSum(){
     int sum = 0;
-    Node *p = head;
+    Node<T> *p = head;
     while(p){
         sum += p->data;
         p = p->next;
     }
     return sum;
 }
-int LinkedList::getRecMax(){
+template <class T>
+T LinkedList<T>::getRecMax(){
     return max(head);
 }
-int LinkedList::getSize(){
+template <class T>
+int LinkedList<T>::getSize(){
     return size;
 }
-Node * LinkedList::insert(int x){
-    Node * node = new Node(x);
+template <class T>
+Node<T> * LinkedList<T>::insert(T x){
+    Node<T> * node = new Node<T>(x);
     node->next = NULL;
     if(head){
         tail->next = node;
@@ -254,9 +288,10 @@ Node * LinkedList::insert(int x){
     return node;
     
 }
-bool LinkedList::isSorted(){
+template <class T>
+bool LinkedList<T>::isSorted(){
     bool flag = true;
-    Node * p = head;
+    Node<T> * p = head;
 
     while (p->next)
     {
@@ -268,24 +303,26 @@ bool LinkedList::isSorted(){
     return flag;
     
 }
-void LinkedList::add(int data){
+template <class T>
+void LinkedList<T>::add(T data){
     if(head){
-        Node *node = new Node(data);
+        Node<T> *node = new Node<T>(data);
         node->next = head;
         head = node;
     }else{
-        head = new Node(data);
+        head = new Node<T>(data);
         head->next = NULL;
         tail = head;
     }
     size++;
 }
-void LinkedList::reverseDisplay(){
+template <class T>
+void LinkedList<T>::reverseDisplay(){
     revD(head);
 }
-
-Node * LinkedList::search(int x){
-    Node *p = head;
+template <class T>
+Node<T> * LinkedList<T>::search(T x){
+    Node<T> *p = head;
 
     while (p)
     {   
@@ -295,10 +332,10 @@ Node * LinkedList::search(int x){
     return NULL;
     
 }
-
-Node * LinkedList::optSearch(int x){
-    Node * p = head;
-    Node * q;
+template <class T>
+Node<T> * LinkedList<T>::optSearch(T x){
+    Node<T> * p = head;
+    Node<T> * q;
     while (p)
     {   
         q = p;
@@ -315,10 +352,10 @@ Node * LinkedList::optSearch(int x){
     return NULL;
     
 }
-
-Node * LinkedList::insert(int x, int index){
-    Node *node = new Node(x);
-    Node *p = head;
+template <class T>
+Node<T> * LinkedList<T>::insert(T x, int index){
+    Node<T> *node = new Node<T>(x);
+    Node<T> *p = head;
     if(index < 0 || index > size) return NULL;
     if(index==0){
         add(x);
@@ -333,9 +370,9 @@ Node * LinkedList::insert(int x, int index){
     }
     return node;
 }
-
-void LinkedList::display(){
-    Node *p = head;
+template <class T>
+void LinkedList<T>::display(){
+    Node<T> *p = head;
     while(p){
         cout<<p->data<<" ";
         p = p->next;
@@ -343,22 +380,21 @@ void LinkedList::display(){
 }
 
 int main(){
-    LinkedList list;
-    LinkedList list2;
-    list.add(15);
-    list.add(8);
-    list.add(5);
-    list.add(1);
+    LinkedList<string> list;
+    LinkedList<string> list2;
+    list.add("first");
+    list.add("Second");
+    list.add("third");
+    list.add("fourth");
     cout<<"\nFirst List\n";
     list.display();
-    list2.add(16);
-    list2.add(12);
-    list2.add(9);
-    list2.add(3);
-    list2.add(1);
+    list2.add("1");
+    list2.add("2");
+    list2.add("3");
+    list2.add("4");
+    list2.add("5");
     cout<<"\nSecond List\n";
     list2.display();
     cout<<"\nSum of Lists\n";
-    mergeSorted(list, list2).display();
     return 0;
 }
