@@ -41,6 +41,8 @@ public:
     LinkedList operator+(LinkedList list);
     //friend LinkedList<T> mergeSorted<>(LinkedList<T> list1, LinkedList<T> list2);
     void createLoop();
+    T getMiddle();
+    T getMiddle2();
 
 
 private:
@@ -378,23 +380,38 @@ void LinkedList<T>::display(){
         p = p->next;
     }
 }
+template <class T>
+T LinkedList<T>::getMiddle(){
+    int middleIndex = (size+1)/2;
+    T middleData;
+    Node<T> *p = head;
+    for(int i =0; i< middleIndex-1; i++){
+        p = p->next;
+    }
+    middleIndex = p->data;
+    return middleIndex;
+}
+template <class T>
+T LinkedList<T>::getMiddle2(){
+    Node<T> *p = head;
+    Node<T> *q = p;
 
+    while(q){
+        q = q->next;
+        if(q) q = q->next;
+        if(q) p = p->next;
+    }
+    return p->data;
+}
 int main(){
-    LinkedList<string> list;
-    LinkedList<string> list2;
-    list.add("first");
-    list.add("Second");
-    list.add("third");
-    list.add("fourth");
-    cout<<"\nFirst List\n";
+    LinkedList<int> list;
+    list.add(3);
+    list.add(4);
+    list.add(5);
+    list.add(8);
+    list.add(11);
     list.display();
-    list2.add("1");
-    list2.add("2");
-    list2.add("3");
-    list2.add("4");
-    list2.add("5");
-    cout<<"\nSecond List\n";
-    list2.display();
-    cout<<"\nSum of Lists\n";
+    cout<<"\nMiddle Element is ";
+    cout<<list.getMiddle2();
     return 0;
 }
