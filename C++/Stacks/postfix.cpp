@@ -105,12 +105,134 @@ char * postFix(char *str, int len){
     ps[j] = NULL;
     return ps;
 } 
+
+char *postFix2(char *str, int len){
+    char *ps = new char[len];
+    Stack stack;
+    int j=0,i=0;
+    while(i<len){
+        if(getPrec(str[i])){
+            if(stack.isNotEmpty()){
+                if(getPrec(stack.peek())< getPrec(str[i])){
+                    stack.push(str[i++]);
+                }else{
+                    ps[j++] = stack.pop();
+                }
+            }else{
+                stack.push(str[i++]);
+            }
+        }else{
+            ps[j++] = str[i++];
+        }
+    }
+    while (stack.isNotEmpty())
+    {
+        ps[j++] = stack.pop();
+    }
+    ps[j] = NULL;
+    return ps;
+
+}
+
+
+int getOutPre(char x){
+    if(x == '+' || x == '-'){
+        return 1;
+    }else if(x == '*' || x == '/'){
+        return 3;
+    }else if(x == '^'){
+        return 6;
+    }else if(x == '('){
+        return 7;
+    }else if(x == ')'){
+        return 0;
+    }else{
+        return -1;
+    }
+}
+
+
+int getInPre(char x){
+    if(x == '+' || x == '-'){
+        return 2;
+    }else if(x == '*' || x == '/'){
+        return 4;
+    }else if(x == '^'){
+        return 5;
+    }else if(x == '('){
+        return 0;
+    }
+    return NULL;
+}
+char *postFixComp(char *str, int len){
+    char *ps = new char[len];
+    Stack stack;
+    int i,j;
+    i = j = 0;
+    while(i<len){
+        if(getOutPre(str[i]) != -1){
+            if(stack.isNotEmpty()){
+                if(getInPre(stack.peek()) < getOutPre(str[i])){
+                    stack.push(str[i++]);
+                }else if(getInPre(stack.peek()) > getOutPre(str[i])){
+                    ps[j++] = stack.pop();
+                }else{
+                    stack.pop();
+                }
+            }else{
+                if(str[i] != ')'){
+                   stack.push(str[i++]); 
+                }else
+                {
+                    i++;
+                }      
+                
+            }
+        }else{
+            ps[j++] = str[i++];
+        }
+    }
+    while(stack.isNotEmpty()){
+        ps[j++] = stack.pop();
+    }
+    ps[j] = NULL;
+    return ps;
+}
+
+int evaluate(char *str, int len){
+    int i = 0;
+    char res;
+    Stack stack;
+    while(i<len){
+        if(getPrec(str[i])){
+            int op1,op2;
+            op2 =  stack.pop();
+            op1 = stack.pop();
+            if(str[i] == '+'){
+                res = op1 + op2;
+            }else if(str[i] == '-'){
+                res = op1 - op2;
+            }else if (str[i] == '*'){
+                res = op1 * op2;
+            }else if(str[i] == '/'){
+                res = op1 / op2;
+            }
+            stack.push(res);
+            i++;
+        }else{
+            stack.push(str[i++]- '0' );
+        }
+    }
+    return stack.pop();
+}
+
 int main(){
     char *str;
-    int num = 10;
+    int num = 20;
     str = new char[num];
     scanf("%s", str);
-    printf("%s",postFix(str, strlen(str)));
-
+    printf("%s",postFixComp(str, strlen(str)));
+    printf("\nSolved Epression is ");
+    printf("\n%d", evaluate(postFixComp(str, strlen(str)), strlen(str)) );
     return 0;
 }
